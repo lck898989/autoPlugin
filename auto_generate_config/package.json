@@ -1,0 +1,30 @@
+{
+  "name": "auto_generate_config",
+  "version": "0.0.1",
+  "description": "The package template for getting started.",
+  "author": "Cocos Creator",
+  "main": "main.js",
+  "scene-script": "scene-walker.js",
+  "main-menu": {
+    "i18n:MAIN_MENU.package.title/auto_generate_config/autoFixPosition": {
+      "message": "auto_generate_config:open"
+    },
+    "i18n:MAIN_MENU.package.title/auto_generate_config/autoConfigProgram": {
+      "message": "auto_generate_config:openConfig"
+    }
+  },
+  "panel": {
+    "main": "panel/index.js",
+    "type": "dockable",
+    "title": "auto_generate_config",
+    "width": 400,
+    "height": 300
+  },
+  "panel.autoConfig": {
+    "main": "autoConfig/index.js",
+    "type": "dockable",
+    "title": "autoConfig",
+    "width": 800,
+    "height": 600
+  }
+}

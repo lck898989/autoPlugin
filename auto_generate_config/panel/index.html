@@ -1,0 +1,35 @@
+<div class="title">
+    <h2 style="width: 100%;">调整节点位置自动调整</h2>
+</div>
+
+<!-- <ui-input placeholder="配置文件目录" v-value="configDir"></ui-input> -->
+<div id="con">
+    <div style="width: 100%;">
+        <ui-prop name="配置文件路径:">
+            <div class="flex-1 layout horizontal center">
+                <ui-input class="flex-1" readonly="readonly" v-value="fileSavePath">
+    
+                </ui-input>
+                <ui-button v-on:confirm="onClickSelect">选择</ui-button>
+                <!-- <ui-button v-on:confirm="onClickOpen">打开</ui-button> -->
+            </div>
+        </ui-prop>
+    </div>
+    <div style="width: 100%;">
+        <ui-prop name= "组件名：">
+            <div class="flex-1 layout horizontal center">
+                <ui-input class="flex-1" v-value="componentName">
+    
+                </ui-input>
+                <!-- <ui-button v-on:confirm="onClickOpen">打开</ui-button> -->
+            </div>
+        </ui-prop>
+    </div>
+</div>
+<div style="width: 100%;height: 30%;">
+
+</div>
+<div style="width: 100%; text-align: center;">
+    <ui-button class='green' @click="startConfig">开始配置</ui-button>
+</div>
+

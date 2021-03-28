@@ -1,0 +1,45 @@
+<h2 class="title">自动配置项目</h2>
+<div class="coment">
+    <div class="con">
+        <h3 class="commentFont">*默认导入同步async...await 插件脚本</h3>
+    </div>
+    <div class="con">
+        <h3 class="commentFont">*填入组件名</h3>
+    </div>
+    <div class="con">
+        <h3 class="commentFont">*选择文件夹配置开始自动生成项目目录</h3>
+    </div>
+    <div class="con">
+        <h3 class="commentFont">*组件需要的工具目录不用管，选择完目录之后会自动填充路径</h3>
+    </div>
+
+</div>
+
+<ui-box-container>
+    <div class="input-container">
+        <div style="width: 20%;">
+            <h4>组件需要的工具目录</h4>
+
+        </div>
+        <ui-input style="width: 80%;" placeholder="选择组件工具文件夹" readonly :value="configDir"></ui-input>
+    </div>
+    
+    <div class="input-container">
+        <div style="width: 20%;">
+            <h4>组件名</h4>
+        </div>
+        <ui-input style="width: 100%;" placeholder="组件名" :value="componentName" @confirm="componentConfirm"></ui-input>
+    </div>
+
+    <div class="btn">
+        <ui-button v-if="configDir === ''" @click="choose" class="green">选择文件夹开始自动生成</ui-button>
+        <ui-button v-else @click="startAutoBuild" class="green">开始配置</ui-button>
+
+        <ui-checkbox :checked="importPlugin" @change="changePlugConfig" style="margin-top: 10px;">是否导入async...await 插件脚本</ui-checkbox>
+    </div>
+
+
+    
+</ui-box-container>
+
+

@@ -1,0 +1,40 @@
+.title {
+    text-align:  center;
+    width: 100%;
+    color: aquamarine;
+}
+
+.input-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: space-between;
+    flex-wrap: nowrap;
+}
+.btn {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+
+}
+.coment{
+    /* text-align: center; */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+
+    padding-left: 40%;
+}
+.con {
+    width: 100%;
+}
+.commentFont{
+    color:cyan;
+}
