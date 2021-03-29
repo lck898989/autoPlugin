@@ -179,9 +179,9 @@ Editor.Panel.extend({
               let len = results.length;
               let sceneMangerUuid = '';
               let prefabUuids = [];
+              let pluginRunTimePath = '';
 
               results.forEach((item) => {
-                Editor.log('item is ',item.type,item.url);
                 if(item.type === 'javascript' && item.url.indexOf('SceneManager.js') >= 0) {
                   Editor.log("manage's item is ",item);
                   sceneMangerUuid = item.path;
@@ -196,17 +196,25 @@ Editor.Panel.extend({
                 if(item.type === 'prefab' && regStr.test(item.url)) {
                   prefabUuids.push(item.uuid);
                 }
+                if(item.type === 'javascript' && item.url.indexOf('Runtime.js') >= 0) {
+                  Editor.log('item is ',item);
+                  pluginRunTimePath = item.uuid;
+                }
                 
               });
 
               setTimeout(() => {
                 if(rootNodeUUid && sceneMangerUuid) {
-                  Editor.Scene.callSceneScript('auto_generate_config', 'bindScripts', { uuid: rootNodeUUid, compName,sceneMangerUuid,prefabUuids}, (err, res) => {
+                  Editor.Scene.callSceneScript('auto_generate_config', 'bindScripts', { uuid: rootNodeUUid, compName,prefabUuids}, (err, res) => {
                     console.log('call over');
                   })
+
+                  // 设置该脚本文件为插件脚本
+                  Editor.Scene.callSceneScript('auto_generate_config', 'setScriptToPlugin', { uuid: pluginRunTimePath }, (err, res) => {
+                    console.log('call over');
+                  });
                 }
               },1000);
-
               
             });
           }, 1000);
@@ -273,13 +281,14 @@ Editor.Panel.extend({
               if(fileName === 'sceneManager.js') {
                 data = data.replace(/oneDraw/gm, this.componentName);
               }
+
+              
               
               let firstCha = fileName[0].toUpperCase();
               const remain = fileName.substring(1);
               firstCha = firstCha.concat(remain);
 
               fs.writeFileSync(`${targetUrl}/${this.componentName}${firstCha}`, data);
-
             }
           })
 

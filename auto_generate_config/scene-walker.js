@@ -85,10 +85,14 @@ module.exports = {
         }
     },
 
+    /**
+     * 自动绑定脚本
+     * @param  {event} event
+     * @param  {Object} params
+     */
     'bindScripts': async (event,params) => {
         const uuid = params.uuid;
         const compName = params.compName;
-        const sceneManagerUuid = params.sceneMangerUuid;
         const prefabsUuid = params.prefabUuids;
 
         Editor.log('uuids is ',prefabsUuid);
@@ -143,13 +147,44 @@ module.exports = {
 
             const prefabData = res.serialize();
 
-            Editor.assetdb.saveExists(`db://assets/${compName}/RootNode.prefab`,prefabData,(err,result) => {
+            Editor.assetdb.saveExists(`db://assets/${compName}/RootNode.prefab`,prefabData,async (err,result) => {
                 if(err) {
                     Editor.log('err is ',err);
                 }
                 Editor.log('result is ',result);
+
+                // 查找Canvas节点然后在canvas节点下绑定main.js脚本
+                const canvasNode = cc.find('Canvas');
+                Editor.log("canvasNode is ",canvasNode);
+                
+                if(canvasNode) {
+                    const mainComp = canvasNode.addComponent(`${compName}Main`);
+                    mainComp.rootPrefab = await loadPrefabByUuid(uuid);
+                    
+                } else {
+                    Editor.log("请切换到主场景界面");
+                }
             })
         })
+        
+    },
+
+    /**
+     * 设置某个脚本文件为插件脚本
+     * @param  {event} event
+     * @param  {Object} params
+     */
+    'setScriptToPlugin' (event,params) {
+
+        const jsUuid = params.uuid;
+        Editor.log("jsUuid is ",jsUuid);
+        console.log('remote is ',Editor.assetdb.remote.loadMetaByUuid);
+
+        const meatFile = Editor.assetdb.remote.loadMetaByUuid(jsUuid);
+        Editor.log("jsfile’s meat file is ",meatFile);
+        meatFile.isPlugin = true;
+        meatFile.loadPluginInEditor = true;
+
         
     }
 }
