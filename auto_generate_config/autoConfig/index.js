@@ -10,7 +10,6 @@ Editor.Panel.extend({
   style: fs.readFileSync(Editor.url("packages://auto_generate_config/autoConfig/index.css"), 'utf-8'),
 
   // 读取html文件内容
-
   template: fs.readFileSync(Editor.url("packages://auto_generate_config/autoConfig/index.html"), 'utf-8'),
 
   // element and variable binding
@@ -32,11 +31,33 @@ Editor.Panel.extend({
         configDir: '',
         componentName: '',
         importPlugin: true,
+        className: ''
       },
 
       created() {
+        Editor.log("created");
+        const localConfigDir = localStorage.getItem('configDir');
+        const compName = localStorage.getItem('compName');
+        const className = localStorage.getItem('className');
 
+        if(localConfigDir) {
+          Editor.log("本地组件工具目录数据",localConfigDir);
+          this.configDir = localConfigDir;
+        }
+        if(compName) {
+          Editor.log("本地组件名",compName);
+          this.componentName = compName;
+        }
 
+        if(className) {
+          Editor.log("本地课程名",className);
+          this.className = className;
+        }
+      },
+
+      mounted() {
+        Editor.log('mounted');
+        
       },
 
       /** 监听talkNum */
@@ -85,6 +106,8 @@ Editor.Panel.extend({
           Editor.log('e is ', e);
           if (!e) return;
           this.configDir = e[0];
+
+          localStorage.setItem('configDir',this.configDir);
 
           Editor.log('componfentNam is ', this.componentName);
           this.startAutoBuild();
@@ -148,14 +171,17 @@ Editor.Panel.extend({
               //结束时星星特效的声音
               game_xingxing:
                   'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/072b424828c69f83b7af6e4093e95894.mp3',
-          }
-
+            }
           }
 
           const compName = `${this.componentName}Index`;
           let indexJsonStr = fs.readFileSync(`${baseUrl}/index.js`,'utf8');
           indexJsonStr = indexJsonStr.replace(/oneDraw/gm,this.componentName);
           Editor.log('json is ',indexJsonStr);
+
+          if(this.className) {
+            propsJson.name = this.className;
+          }
 
           propsJson.bundleName = `${this.componentName}`;
           const coname = this.tuoFeng(this.componentName);
@@ -212,11 +238,11 @@ Editor.Panel.extend({
                 Editor.log('str is ',regStr.test(item.url));
                 
                 if(item.type === 'prefab' && regStr.test(item.url)) {
-                  prefabUuids.push(item.uuid);
+                  prefabUuids.push(item);
                 }
                 if(item.type === 'javascript' && item.url.indexOf('Runtime.js') >= 0) {
                   Editor.log('item is ',item);
-                  pluginRunTimePath = item.uuid;
+                  pluginRunTimePath = item;
                 }
                 
               });
@@ -228,7 +254,7 @@ Editor.Panel.extend({
                   });
 
                   // 设置该脚本文件为插件脚本
-                  Editor.Scene.callSceneScript('auto_generate_config', 'setScriptToPlugin', { uuid: pluginRunTimePath }, (err, res) => {
+                  Editor.Scene.callSceneScript('auto_generate_config', 'setScriptToPlugin', { item: pluginRunTimePath }, (err, res) => {
                     console.log('call over');
                   });
                 }
@@ -332,6 +358,14 @@ Editor.Panel.extend({
 
         componentConfirm(e, value) {
           this.componentName = e.detail.value;
+
+          localStorage.setItem('compName',this.componentName);
+        },
+
+        classNameConfirm(e,value) {
+          this.className = e.detail.value;
+
+          localStorage.setItem('className',this.className);
         }
       }
     })

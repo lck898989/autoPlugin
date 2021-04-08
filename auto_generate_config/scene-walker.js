@@ -113,10 +113,43 @@ module.exports = {
             })
         }
 
+        /**
+         * 改变预制体的信息并且保存
+         * @param  {string} url 预制体对应的路径
+         * @param  {Object | any} prefabData 预制体的数据
+         * @param  {Function} callback
+         */
+        const changePrefabAndSave = (url,prefabData,callback) => {
+            if(callback) {
+                Editor.assetdb.saveExists(url,prefabData,callback);
+            } else {
+                return new Promise((resolve,reject) => {
+                    Editor.assetdb.saveExists(url,prefabData,(err,res) => {
+                        if(err) {
+                            reject(new Error('保存资源失败'));
+                            return;
+                        }
+    
+                        resolve(res);
+    
+                        callback && callback(res);
+                    });
+                });
+            }
+
+        }
+
+
         const prefabs = [];
 
         for(let uuidItem of prefabsUuid) {
-            const prefab = await loadPrefabByUuid(uuidItem);
+            const prefab = await loadPrefabByUuid(uuidItem.uuid);
+            prefab.data.addComponent(`${compName}SceneUI`);
+            prefab.data.addComponent(`${compName}SceneLogic`);
+
+            const dataItem = prefab.serialize();
+            // 更新预制体
+            await changePrefabAndSave(uuidItem.url,dataItem);
             prefabs.push(prefab);
         }
 
@@ -139,7 +172,7 @@ module.exports = {
             const indexComp = res.data.addComponent(indexCompName);
             const comp = res.data.addComponent(cname);
 
-            if(!comp || !indexCompName) {
+            if(!comp || !indexComp) {
                 Editor.log('绑定index组件或者绑定场景管理器失败!');
                 return;
 
@@ -150,15 +183,15 @@ module.exports = {
 
             const prefabData = res.serialize();
 
-            Editor.assetdb.saveExists(`db://assets/${compName}/RootNode.prefab`,prefabData,async (err,result) => {
+            changePrefabAndSave(`db://assets/${compName}/RootNode.prefab`,prefabData,async (err,result) => {
                 if(err) {
                     Editor.log('err is ',err);
                 }
-                Editor.log('result is ',result);
+                // Editor.log('result is ',result);
 
                 // 查找Canvas节点然后在canvas节点下绑定main.js脚本
                 const canvasNode = cc.find('Canvas');
-                Editor.log("canvasNode is ",canvasNode);
+                // Editor.log("canvasNode is ",canvasNode);
                 
                 if(canvasNode) {
                     const mainComp = canvasNode.addComponent(`${compName}Main`);
@@ -167,7 +200,7 @@ module.exports = {
                 } else {
                     Editor.log("请切换到主场景界面");
                 }
-            })
+            });
         })
         
     },
@@ -178,16 +211,40 @@ module.exports = {
      * @param  {Object} params
      */
     'setScriptToPlugin' (event,params) {
+        const fileObj = params.item;
 
-        const jsUuid = params.uuid;
-        Editor.log("jsUuid is ",jsUuid);
-        console.log('remote is ',Editor.assetdb.remote.loadMetaByUuid);
+        // Editor.log("params is ",params.);
+        const jsUuid = fileObj.uuid;
+        const jsPath = fileObj.url;
+
+        Editor.log("jsUuid is ",jsUuid,jsPath);
+        console.log('remote is ',Editor.assetdb.remote.loadMetaByUuid,Editor.assetdb.remote.exists);
 
         const meatFile = Editor.assetdb.remote.loadMetaByUuid(jsUuid);
-        Editor.log("jsfile’s meat file is ",meatFile);
+        console.log("jsfile’s meat file is ",meatFile);
         meatFile.isPlugin = true;
         meatFile.loadPluginInEditor = true;
 
-        
+        const metaFilePath = jsPath + '.meta';
+        Editor.log("metaFile is ",metaFilePath);
+
+        const metaJson = Editor.assetdb.remote.loadMetaByUuid(meatFile.uuid);
+        Editor.log("metaJson si ",metaJson);
+
+        // const metaJson = JSON.stringify(meatFile,null,2);
+        // Editor.log(metaJson);
+        // // 保存meta文件
+        // Editor.assetdb.saveMeta(meatFile.uuid,metaJson);
+
+        // 询问主进程是否有该文件
+        setTimeout(() => {
+            Editor.Ipc.sendToMain('auto_generate_config:fileIsExist', {url: metaFilePath},(res) => {
+                Editor.log('res is ',res ? `${metaFilePath}存在` : `${metaFilePath}不存在`);
+    
+                if(res) {
+    
+                }
+            });
+        },1000);
     }
 }

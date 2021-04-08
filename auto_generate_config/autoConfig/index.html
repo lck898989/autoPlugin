@@ -4,13 +4,13 @@
         <h3 class="commentFont">*默认导入同步async...await 插件脚本</h3>
     </div>
     <div class="con">
-        <h3 class="commentFont">*填入组件名</h3>
+        <h3 class="commentFont">*填入组件名,课程名（填完之后保存本地下次打开自动填充）</h3>
     </div>
     <div class="con">
         <h3 class="commentFont">*选择文件夹配置开始自动生成项目目录</h3>
     </div>
     <div class="con">
-        <h3 class="commentFont">*组件需要的工具目录不用管，选择完目录之后会自动填充路径</h3>
+        <h3 class="commentFont">*组件需要的工具目录不用管，选择完目录之后会自动填充路径（填完之后保存本地下次打开自动填充）</h3>
     </div>
 
 </div>
@@ -18,7 +18,7 @@
 <ui-box-container>
     <div class="input-container">
         <div style="width: 20%;">
-            <h4>组件需要的工具目录</h4>
+            <h4>组件需要的工具目录:</h4>
 
         </div>
         <ui-input style="width: 80%;" placeholder="选择组件工具文件夹" readonly :value="configDir"></ui-input>
@@ -26,9 +26,16 @@
     
     <div class="input-container">
         <div style="width: 20%;">
-            <h4>组件名</h4>
+            <h4>组件名:</h4>
         </div>
         <ui-input style="width: 100%;" placeholder="组件名" :value="componentName" @confirm="componentConfirm"></ui-input>
+    </div>
+
+    <div class="input-container">
+        <div style="width: 20%;">
+            <h4>课程名:</h4>
+        </div>
+        <ui-input style="width: 100%;" placeholder="组件名" :value="className" @confirm="classNameConfirm"></ui-input>
     </div>
 
     <div class="btn">
