@@ -225,7 +225,7 @@ Editor.Panel.extend({
                 if(rootNodeUUid && sceneMangerUuid) {
                   Editor.Scene.callSceneScript('auto_generate_config', 'bindScripts', { uuid: rootNodeUUid, compName,prefabUuids}, (err, res) => {
                     console.log('call over');
-                  })
+                  });
 
                   // 设置该脚本文件为插件脚本
                   Editor.Scene.callSceneScript('auto_generate_config', 'setScriptToPlugin', { uuid: pluginRunTimePath }, (err, res) => {
@@ -249,6 +249,8 @@ Editor.Panel.extend({
           // fs.mkdirSync(dirStr);
           const dirArr = dirStr.split(path.sep);
           const targetDir = dirArr[dirArr.length - 1];
+
+          const replaceArr = ['audioUtil.js','loadUtil.js','dragComp.js','sceneManager.js','sceneLogic.js','sceneUI.js'];
 
           fs.stat(dirStr, (err, stat) => {
             if (err) return;
@@ -278,6 +280,7 @@ Editor.Panel.extend({
             } else if (stat.isFile()) {
               const fileName = path.basename(dirStr);
 
+              // 不导入async...await 插件脚本
               if (!this.importPlugin && fileName === 'runtime.js') {
                 return;
               }
@@ -288,19 +291,9 @@ Editor.Panel.extend({
 
               let data = fs.readFileSync(dirStr, 'utf8');
 
-              if (fileName === 'audioUtil.js' || fileName === 'loadUtil.js' || fileName === 'dragComp.js') {
-                data = data.replace(/oneDrawProps/gm, `${this.componentName}Props`);
-
-                if (fileName === 'dragComp.js') {
-                  data = data.replace(/oneDraw/gm, this.componentName);
-                }
-              }
-
-              if(fileName === 'sceneManager.js') {
+              if(replaceArr.indexOf(fileName) >= 0) {
                 data = data.replace(/oneDraw/gm, this.componentName);
               }
-
-              
               
               const firstCha = this.tuoFeng(fileName);
 
