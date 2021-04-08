@@ -134,10 +134,13 @@ module.exports = {
             // museumSceneManager
             const cname = `${compName}SceneManager`;
             Editor.log('组件名是：',cname);
+            const indexCompName = `${compName}Index`;
 
+            const indexComp = res.data.addComponent(indexCompName);
             const comp = res.data.addComponent(cname);
-            if(!comp) {
-                Editor.log('managerScript is null');
+
+            if(!comp || !indexCompName) {
+                Editor.log('绑定index组件或者绑定场景管理器失败!');
                 return;
 
             } else {

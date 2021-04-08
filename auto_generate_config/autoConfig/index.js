@@ -99,11 +99,6 @@ Editor.Panel.extend({
           const baseUrl = this.configDir;
           const targetUrl = Editor.Project.path + `/assets/${this.componentName}`;
 
-          // const texturesUrl = Editor.Project.path + `/assets/${this.componentName}/textures`;
-          // const audioUrl = Editor.Project.path + `/assets/${this.componentName}/audios`;
-          // const spinUrl = Editor.Project.path + `/assets/${this.componentName}/spines`;
-          // const prefabsUrl = Editor.Project.path + `/assets/${this.componentName}/prefabs`;
-
           const propsJson = {
             name: 'P1-A3-04-双重规律-拖拽拼勋章', // 组件名称，一般为了让教研标识具体是哪个实例
             bundleName: 'measureAlbum',
@@ -127,6 +122,34 @@ Editor.Panel.extend({
             maxPage: 8,
             rewordCount: 3,
 
+            audioConfig:  {
+              url_btn_click:
+                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/da712475c0b0f945f50fb9f93d705493.wav',
+              url_shape_click:
+                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/b7dbde51a2af2e9fcb7ac0cfffe332b2.wav',
+              url_key_click:
+                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/172015ee5f190bd2bb169f29c01712a8.wav',
+              url_key_del:
+                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/a5bd06db353d68cbaaf173cf4229605d.wav',
+              url_drag_select:
+                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/614953c236932115f26f172e792fd0df.wav',
+              url_drag_place:
+                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/400a2ef4a74d2db423419557c987e46b.wav',
+              url_drag_back:
+                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/03da36e5b018e5a37105dbd97d98738a.wav',
+              url_step_success:
+                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/b40439a295b10b21a7717a381526d3ac.wav',
+              url_step_err:
+                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/ac69ab461d4947fa3b72ff515e652fec.wav',
+              url_submit_success:
+                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/1124add52d789d1353ac63a5aa3ed6f3.wav',
+              url_submit_fail:
+                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/911c33f26b548a33a9660b2355a9c3f8.wav',
+              //结束时星星特效的声音
+              game_xingxing:
+                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/072b424828c69f83b7af6e4093e95894.mp3',
+          }
+
           }
 
           const compName = `${this.componentName}Index`;
@@ -135,20 +158,15 @@ Editor.Panel.extend({
           Editor.log('json is ',indexJsonStr);
 
           propsJson.bundleName = `${this.componentName}`;
-          propsJson.type = `cocosGame${this.componentName}`;
+          const coname = this.tuoFeng(this.componentName);
 
+          propsJson.type = `cocosGame${coname}`;
           propsRealData = 'export const props = ' + JSON.stringify(propsJson, null, '\t') + '\n\n' + 'export const uid = 123456;\n' + 'export const id = 13579;';
 
           this.mkDirAndFile(baseUrl, targetUrl, () => {
             Editor.log("创建文件夹成功");
           });
           console.log('targetUrl', targetUrl);
-
-          // fs.mkdirSync(texturesUrl, { recursive: true });
-          // fs.mkdirSync(audioUrl, { recursive: true });
-          // fs.mkdirSync(spinUrl, { recursive: true });
-          // fs.mkdirSync(prefabsUrl, { recursive: true });
-
           setTimeout(() => {
             const indexFilePath = `${targetUrl}/${this.componentName}Index.js`;
             const propsFilePath = `${targetUrl}/${this.componentName}Props.js`;
@@ -284,15 +302,20 @@ Editor.Panel.extend({
 
               
               
-              let firstCha = fileName[0].toUpperCase();
-              const remain = fileName.substring(1);
-              firstCha = firstCha.concat(remain);
+              const firstCha = this.tuoFeng(fileName);
 
               fs.writeFileSync(`${targetUrl}/${this.componentName}${firstCha}`, data);
             }
           })
 
 
+        },
+
+        tuoFeng(fileName) {
+          let firstCha = fileName[0].toUpperCase();
+          const remain = fileName.substring(1);
+          firstCha = firstCha.concat(remain);
+          return firstCha;
         },
 
         onClickSelect() {
