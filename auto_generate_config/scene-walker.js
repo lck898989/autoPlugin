@@ -91,12 +91,18 @@ module.exports = {
      * @param  {Object} params
      */
     'bindScripts': async (event,params) => {
+        Editor.log("***************😄开始自动绑定脚本😄***************");
         const uuid = params.uuid;
         const compName = params.compName;
         const prefabsUuid = params.prefabUuids;
 
         Editor.log('uuids is ',prefabsUuid);
 
+        /**
+         * 加载预制体信息并且返回预制体
+         * @param  {string} uuid
+         * @returns {cc.Prefab}
+         */
         const loadPrefabByUuid = async (uuid) => {
             return new Promise((resolve,reject) => {
                 cc.assetManager.loadAny({
@@ -139,7 +145,6 @@ module.exports = {
 
         }
 
-
         const prefabs = [];
 
         for(let uuidItem of prefabsUuid) {
@@ -147,6 +152,7 @@ module.exports = {
             prefab.data.addComponent(`${compName}SceneUI`);
             prefab.data.addComponent(`${compName}SceneLogic`);
 
+            // 预制体序列化然后才能保存
             const dataItem = prefab.serialize();
             // 更新预制体
             await changePrefabAndSave(uuidItem.url,dataItem);
@@ -158,22 +164,32 @@ module.exports = {
             uuid
         },(err,res) => {
             if(err) {
-                Editor.log('err is ',err);
+                Editor.log('🙈加载RootNode失败，请确保RootNode存在🙈');
                 return;
             }
             
-            Editor.log("预制体资源是",res);
+            Editor.log("😄预制体资源是",res);
 
             // museumSceneManager
             const cname = `${compName}SceneManager`;
             Editor.log('组件名是：',cname);
             const indexCompName = `${compName}Index`;
 
-            const indexComp = res.data.addComponent(indexCompName);
-            const comp = res.data.addComponent(cname);
+            let indexComp = res.data.getComponent(indexCompName);
+            let comp = res.data.getComponent(cname);
+
+            if(!indexComp) {
+                indexComp = res.data.addComponent(indexCompName);
+            }
+            if(!comp) {
+                comp = res.data.addComponent(cname);
+            }
+
+            res.data.width = 1440;
+            res.data.height = 924;
 
             if(!comp || !indexComp) {
-                Editor.log('绑定index组件或者绑定场景管理器失败!');
+                Editor.log('😒绑定index组件或者绑定场景管理器失败!');
                 return;
 
             } else {
@@ -185,17 +201,31 @@ module.exports = {
 
             changePrefabAndSave(`db://assets/${compName}/RootNode.prefab`,prefabData,async (err,result) => {
                 if(err) {
-                    Editor.log('err is ',err);
+                    Editor.log('🙈刷新RootNode失败');
                 }
-                // Editor.log('result is ',result);
-
                 // 查找Canvas节点然后在canvas节点下绑定main.js脚本
                 const canvasNode = cc.find('Canvas');
-                // Editor.log("canvasNode is ",canvasNode);
+
+                const canvasComp = canvasNode.getComponent(cc.Canvas);
+                canvasComp.designResolution.width = 1440;
+                canvasComp.designResolution.height = 924;
                 
+                Editor.log('canvasNode is ',canvasNode);
+        
                 if(canvasNode) {
-                    const mainComp = canvasNode.addComponent(`${compName}Main`);
-                    mainComp.rootPrefab = await loadPrefabByUuid(uuid);
+                    // canvasNode.removeComponent(`${compName}Main`);
+                    if(!canvasNode.getComponent(`${compName}Main`)) {
+                        const mainComp = canvasNode.addComponent(`${compName}Main`);
+                        mainComp.rootPrefab = await loadPrefabByUuid(uuid);
+    
+                        // 必须主进程去保存场景
+                        Editor.Ipc.sendToMain('auto_generate_config:saveScene',err => {
+                            if(err.code === 'ETIMEOUT') {
+                                Editor.log("😒超时😒");
+                            }
+                            Editor.log("**********😄保存场景完成，绑定完毕，自动生成项目完毕😄,奥利给***********");
+                        });
+                    }
                     
                 } else {
                     Editor.log("请切换到主场景界面");
@@ -206,45 +236,54 @@ module.exports = {
     },
 
     /**
-     * 设置某个脚本文件为插件脚本
+     * 设置某个脚本文件为插件脚本并且将文件夹设置为bundle
      * @param  {event} event
      * @param  {Object} params
      */
     'setScriptToPlugin' (event,params) {
+        Editor.log("params is ",params);
         const fileObj = params.item;
+        const bundleObj = params.bundleObj;
 
-        // Editor.log("params is ",params.);
         const jsUuid = fileObj.uuid;
-        const jsPath = fileObj.url;
+        const folderUuid = bundleObj.uuid;
+        const bundleName = params.compName;
 
-        Editor.log("jsUuid is ",jsUuid,jsPath);
-        console.log('remote is ',Editor.assetdb.remote.loadMetaByUuid,Editor.assetdb.remote.exists);
+        // 修改js文件为插件脚本
+        Editor.assetdb.queryMetaInfoByUuid(jsUuid,(err,info) => {
+            if(err) {
+                Editor.log('err is ',err);
+            }
 
-        const meatFile = Editor.assetdb.remote.loadMetaByUuid(jsUuid);
-        console.log("jsfile’s meat file is ",meatFile);
-        meatFile.isPlugin = true;
-        meatFile.loadPluginInEditor = true;
+            Editor.log('info is ',info);
+            const metaJsonStr = info.json;
+            const metaJson = JSON.parse(metaJsonStr);
 
-        const metaFilePath = jsPath + '.meta';
-        Editor.log("metaFile is ",metaFilePath);
+            metaJson.isPlugin = true;
+            metaJson.loadPluginInEditor = true;
 
-        const metaJson = Editor.assetdb.remote.loadMetaByUuid(meatFile.uuid);
-        Editor.log("metaJson si ",metaJson);
+            Editor.assetdb.saveMeta(metaJson.uuid,JSON.stringify(metaJson));
+        });
 
-        // const metaJson = JSON.stringify(meatFile,null,2);
-        // Editor.log(metaJson);
-        // // 保存meta文件
-        // Editor.assetdb.saveMeta(meatFile.uuid,metaJson);
+        Editor.assetdb.queryMetaInfoByUuid(folderUuid,(err,info) => {
+            if(err) {
+                Editor.log('err is ',err);
+            }
 
-        // 询问主进程是否有该文件
-        setTimeout(() => {
-            Editor.Ipc.sendToMain('auto_generate_config:fileIsExist', {url: metaFilePath},(res) => {
-                Editor.log('res is ',res ? `${metaFilePath}存在` : `${metaFilePath}不存在`);
-    
-                if(res) {
-    
-                }
-            });
-        },1000);
+            Editor.log('info is ',info);
+            const metaJsonStr = info.json;
+            const metaJson = JSON.parse(metaJsonStr);
+
+            metaJson.isBundle = true;
+            metaJson.bundleName = bundleName;
+            metaJson.priority = 8;
+            /** 内联spriteframe */
+            metaJson.inlineSpriteFrames = {
+                "web-mobile": true
+            }
+
+            Editor.assetdb.saveMeta(metaJson.uuid,JSON.stringify(metaJson));
+        });
+
     }
 }

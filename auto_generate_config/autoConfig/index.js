@@ -190,7 +190,7 @@ Editor.Panel.extend({
           propsRealData = 'export const props = ' + JSON.stringify(propsJson, null, '\t') + '\n\n' + 'export const uid = 123456;\n' + 'export const id = 13579;';
 
           this.mkDirAndFile(baseUrl, targetUrl, () => {
-            Editor.log("创建文件夹成功");
+            // Editor.log("创建文件夹成功");
           });
           console.log('targetUrl', targetUrl);
           setTimeout(() => {
@@ -220,12 +220,15 @@ Editor.Panel.extend({
                 Editor.log('err is ', err);
               }
               let rootNodeUUid = ''
-              let len = results.length;
               let sceneMangerUuid = '';
               let prefabUuids = [];
               let pluginRunTimePath = '';
+              let bundleObj = null;
 
               results.forEach((item) => {
+                if(item.type === 'folder' && item.url === `db://assets/${compName}`) {
+                  bundleObj = item;
+                }
                 if(item.type === 'javascript' && item.url.indexOf('SceneManager.js') >= 0) {
                   Editor.log("manage's item is ",item);
                   sceneMangerUuid = item.path;
@@ -235,9 +238,9 @@ Editor.Panel.extend({
                 }
 
                 const regStr = /Page[1-9].prefab/;
-                Editor.log('str is ',regStr.test(item.url));
                 
                 if(item.type === 'prefab' && regStr.test(item.url)) {
+                  Editor.log("prefab's url is ",item.url);
                   prefabUuids.push(item);
                 }
                 if(item.type === 'javascript' && item.url.indexOf('Runtime.js') >= 0) {
@@ -254,7 +257,7 @@ Editor.Panel.extend({
                   });
 
                   // 设置该脚本文件为插件脚本
-                  Editor.Scene.callSceneScript('auto_generate_config', 'setScriptToPlugin', { item: pluginRunTimePath }, (err, res) => {
+                  Editor.Scene.callSceneScript('auto_generate_config', 'setScriptToPlugin', { item: pluginRunTimePath,bundleObj,compName }, (err, res) => {
                     console.log('call over');
                   });
                 }
@@ -294,7 +297,7 @@ Editor.Panel.extend({
 
                 this.mkDirAndFile(itemPath, url);
               }
-              Editor.log('targetDir is ',targetDir,targetUrl);
+              // Editor.log('targetDir is ',targetDir,targetUrl);
               if(targetDir === 'templates') {
                 fs.mkdirSync(targetUrl, { recursive: true });
               } else {
@@ -326,7 +329,6 @@ Editor.Panel.extend({
               fs.writeFileSync(`${targetUrl}/${this.componentName}${firstCha}`, data);
             }
           })
-
 
         },
 

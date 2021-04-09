@@ -48,6 +48,16 @@ module.exports = {
 
     },
 
+    'saveScene' (event,param) {
+      Editor.log("主进程中开始保存场景");
+      Editor.Ipc.sendToPanel('scene', 'scene:stash-and-save',(err) => {
+        if(err.code === 'ETIMEOUT') {
+
+        }
+        event.reply('保存场景成功');
+      },5000);
+    },
+
     /** start config */
     'start-config' (event,params) {
       console.log(`params is ${params}`);
