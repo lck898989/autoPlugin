@@ -207,11 +207,11 @@ module.exports = {
                 const canvasNode = cc.find('Canvas');
 
                 const canvasComp = canvasNode.getComponent(cc.Canvas);
-                canvasComp.designResolution.width = 1440;
-                canvasComp.designResolution.height = 924;
                 
-                Editor.log('canvasNode is ',canvasNode);
-        
+                // 修改canvas设计分辨率
+                canvasComp.fitHeight = true;
+                canvasComp.designResolution = new cc.Size(1440,924);
+
                 if(canvasNode) {
                     // canvasNode.removeComponent(`${compName}Main`);
                     if(!canvasNode.getComponent(`${compName}Main`)) {
