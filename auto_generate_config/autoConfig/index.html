@@ -21,7 +21,7 @@
             <h4>组件需要的工具目录:</h4>
 
         </div>
-        <ui-input style="width: 80%;" placeholder="选择组件工具文件夹" :value="configDir"></ui-input>
+        <ui-input style="width: 80%;" placeholder="选择组件工具文件夹" :value="configDir" @confirm="confirmUtilsDir"></ui-input>
     </div>
     
     <div class="input-container">

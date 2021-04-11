@@ -367,6 +367,11 @@ Editor.Panel.extend({
           this.className = e.detail.value;
 
           localStorage.setItem('className',this.className);
+        },
+
+        confirmUtilsDir(e,value) {
+          this.configDir = e.detail.value;
+          localStorage.setItem('configDir',this.configDir);
         }
       }
     })
