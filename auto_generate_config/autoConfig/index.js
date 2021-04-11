@@ -1,5 +1,3 @@
-// panel/index.js, this filename needs to match the one registered in package.json
-
 /** creator内置的第三方包的正确姿势 */
 const fs = require("fire-fs");
 const path = require("fire-path");
@@ -279,7 +277,8 @@ Editor.Panel.extend({
           const dirArr = dirStr.split(path.sep);
           const targetDir = dirArr[dirArr.length - 1];
 
-          const replaceArr = ['audioUtil.js','loadUtil.js','dragComp.js','sceneManager.js','sceneLogic.js','sceneUI.js'];
+          const replaceArr = ['audioUtil.js','loadUtil.js','dragComp.js','sceneManager.js','sceneLogic.js','sceneUI.js','item.js','con.js'];
+          const excludeArr = ['.DS_Store','index.js','props.js','RootNode.prefab'];
 
           fs.stat(dirStr, (err, stat) => {
             if (err) return;
@@ -314,7 +313,7 @@ Editor.Panel.extend({
                 return;
               }
 
-              if (fileName === '.DS_Store' || fileName === 'index.js' || fileName === 'props.js' || fileName === 'RootNode.prefab') {
+              if (excludeArr.includes(fileName)) {
                 return;
               }
 
