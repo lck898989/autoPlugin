@@ -142,34 +142,6 @@ Editor.Panel.extend({
             pageIndex: 0,
             maxPage: 8,
             rewordCount: 3,
-
-            audioConfig:  {
-              url_btn_click:
-                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/da712475c0b0f945f50fb9f93d705493.wav',
-              url_shape_click:
-                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/b7dbde51a2af2e9fcb7ac0cfffe332b2.wav',
-              url_key_click:
-                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/172015ee5f190bd2bb169f29c01712a8.wav',
-              url_key_del:
-                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/a5bd06db353d68cbaaf173cf4229605d.wav',
-              url_drag_select:
-                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/614953c236932115f26f172e792fd0df.wav',
-              url_drag_place:
-                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/400a2ef4a74d2db423419557c987e46b.wav',
-              url_drag_back:
-                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/03da36e5b018e5a37105dbd97d98738a.wav',
-              url_step_success:
-                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/b40439a295b10b21a7717a381526d3ac.wav',
-              url_step_err:
-                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/ac69ab461d4947fa3b72ff515e652fec.wav',
-              url_submit_success:
-                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/1124add52d789d1353ac63a5aa3ed6f3.wav',
-              url_submit_fail:
-                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/911c33f26b548a33a9660b2355a9c3f8.wav',
-              //结束时星星特效的声音
-              game_xingxing:
-                  'https://mathai-material-replace.cdn.ipalfish.com/mathai/material/replace/courseware/picbook/072b424828c69f83b7af6e4093e95894.mp3',
-            }
           }
 
           const compName = `${this.componentName}Index`;
@@ -277,7 +249,7 @@ Editor.Panel.extend({
           const dirArr = dirStr.split(path.sep);
           const targetDir = dirArr[dirArr.length - 1];
 
-          const replaceArr = ['audioUtil.js','loadUtil.js','dragComp.js','sceneManager.js','sceneLogic.js','sceneUI.js','item.js','con.js'];
+          const replaceArr = ['audioUtil.js','loadUtil.js','dragComp.js','sceneManager.js','sceneLogic.js','sceneUI.js','item.js','con.js','config.js'];
           const excludeArr = ['.DS_Store','index.js','props.js','RootNode.prefab'];
 
           fs.stat(dirStr, (err, stat) => {
